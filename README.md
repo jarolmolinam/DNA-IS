@@ -1,5 +1,5 @@
 # DNA-IS
-# Ionic strength transferable DNA-CG model
+# DNA Ionic Strength transferable DNA-CG model
 This code implements an ionic strength transferable DNA coarse-grained model using graph neural networks.
 
 
