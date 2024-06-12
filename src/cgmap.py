@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import pandas as pd
 from mdtraj import Trajectory
@@ -736,3 +737,119 @@ def cg_by_index(trj, atom_indices_list, bead_label_list, chain_list=None, segmen
 
     new_trj.forces = forces
     return new_trj
+
+def DNA_CG_map(basepairs_per_bead):
+    """ DNA Coarse-Graining Maps
+    Parameters
+    ----------
+    basepairs_per_bead : int
+        Number of basepairs per CG bead
+        0 means 1 nucleotide per bead
+        
+    Returns
+    -------
+    maps : list
+        List of strings for DNA coarse-graining
+    """
+
+    if basepairs_per_bead == 0:
+        maps = ["(resid 0)", "(resid 1)", "(resid 2)",
+                "(resid 3)", "(resid 4)", "(resid 5)",
+                "(resid 6)", "(resid 7)", "(resid 8)",
+                "(resid 9)", "(resid 10)", "(resid 11)",
+                "(resid 12)", "(resid 13)", "(resid 14)",
+                "(resid 15)", "(resid 16)", "(resid 17)",
+                "(resid 18)", "(resid 19)", "(resid 20)",
+                "(resid 21)", "(resid 22)", "(resid 23)",
+                "(resid 24)", "(resid 25)", "(resid 26)",
+                "(resid 27)", "(resid 28)", "(resid 29)",
+                "(resid 30)", "(resid 31)", "(resid 32)",
+                "(resid 33)", "(resid 34)", "(resid 35)",
+                "(resid 36)", "(resid 37)", "(resid 38)",
+                "(resid 39)"
+                ]
+    
+    elif basepairs_per_bead == 1:
+        maps = ["(resid 0) or (resid 39)",
+                "(resid 1) or (resid 38)",
+                "(resid 2) or (resid 37)",
+                "(resid 3) or (resid 36)",
+                "(resid 4) or (resid 35)",
+                "(resid 5) or (resid 34)",
+                "(resid 6) or (resid 33)",
+                "(resid 7) or (resid 32)",
+                "(resid 8) or (resid 31)",
+                "(resid 9) or (resid 30)",
+                "(resid 10) or (resid 29)",
+                "(resid 11) or (resid 28)",
+                "(resid 12) or (resid 27)",
+                "(resid 13) or (resid 26)",
+                "(resid 14) or (resid 25)",
+                "(resid 15) or (resid 24)",
+                "(resid 16) or (resid 23)",
+                "(resid 17) or (resid 22)",
+                "(resid 18) or (resid 21)",
+                "(resid 19) or (resid 20)",
+                ]
+
+    elif basepairs_per_bead == 2:
+        maps = ["(resid 0 to 1) or (resid 38 to 39)",
+                "(resid 2 to 3) or (resid 36 to 37)",
+                "(resid 4 to 5) or (resid 34 to 35)",
+                "(resid 6 to 7) or (resid 32 to 33)",
+                "(resid 8 to 9) or (resid 30 to 31)",
+                "(resid 10 to 11) or (resid 28 to 29)",
+                "(resid 12 to 13) or (resid 26 to 27)",
+                "(resid 14 to 15) or (resid 24 to 25)",
+                "(resid 16 to 17) or (resid 22 to 23)",
+                "(resid 18 to 19) or (resid 20 to 21)",
+                ]
+
+    elif basepairs_per_bead == 4:
+        maps = ["(resid 0 to 3) or (resid 36 to 39)",
+                "(resid 4 to 7) or (resid 32 to 35)",
+                "(resid 8 to 11) or (resid 28 to 31)",
+                "(resid 12 to 15) or (resid 24 to 27)",
+                "(resid 16 to 19) or (resid 20 to 23)",
+                ]
+
+    elif basepairs_per_bead == 5:
+        maps = ["(resid 0 to 4) or (resid 35 to 39)",
+                "(resid 5 to 9) or (resid 30 to 34)",
+                "(resid 10 to 14) or (resid 25 to 29)",
+                "(resid 15 to 19) or (resid 20 to 24)",
+                ]
+
+    elif basepairs_per_bead == 10:
+        maps = ["(resid 0 to 9) or (resid 30 to 39)",
+                "(resid 10 to 19) or (resid 20 to 29)",
+                ]
+
+    else:
+        print("Not a valid basepairs_per_bead value")
+        sys.exit()
+        
+    return maps
+
+def map_forces(forces,atom_indices=None,use_pbc=True):
+    """Compute the center of mass for each frame.
+    Parameters
+    ----------
+    traj : Trajectory
+        Trajectory to sum forces on
+    atom_indices : array-like, dtype=int, shape=(n_atoms)
+            List of indices of atoms to use in computing com
+    Returns
+    -------
+    forces : np.ndarray, shape=(n_frames, 3)
+         Summed up forces on atom indices
+    """
+
+    if atom_indices is not None and len(atom_indices)>0:
+        forces = forces[atom_indices,:]
+    else:
+        forces = forces
+
+    mapped_forces = forces.sum(axis=0)
+
+    return mapped_forces
