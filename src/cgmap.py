@@ -5,7 +5,7 @@ from mdtraj import Trajectory
 from mdtraj import Topology
 from mdtraj import element
 from mdtraj.geometry import distance
-from top_manip import typed_elementwise_rep
+from src.top_manip import typed_elementwise_rep
 
 mapping_options = {}
 
@@ -46,7 +46,7 @@ def map_forces(traj,atom_indices=None,use_pbc=True):
         forces = traj.forces
 
     mapped_forces = forces.sum(axis=1)
-
+    
     return mapped_forces
 
 def get_forcenorms(traj,atom_indices=None,use_pbc=True):
